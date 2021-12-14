@@ -9,7 +9,7 @@ export default async function handler(req, res) {
     switch (method) {
         case 'POST':
             try {
-                const users = await User.find({ firstname: { $regex: req.body.firstname } })
+                const users = await User.find({ firstname: { $regex: req.body.firstname, $options: 'imxs' } })
                 res.status(200).json({ success: true, data: users })
             } catch (error) {
                 res.status(400).json({ success: false })
