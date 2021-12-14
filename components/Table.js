@@ -1,19 +1,6 @@
 /* This example requires Tailwind CSS v2.0+ */
-const people = [
-    {
-        name: 'Jane Cooper',
-        title: 'Regional Paradigm Technician',
-        department: 'Optimization',
-        role: 'Admin',
-        email: 'jane.cooper@example.com',
-        image:
-            'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60',
-    },
-    // More people...
-]
 
-export default function Table({ data }) {
-    console.log(data);
+export default function Table({ data, getUserDataById, deleteUserById }) {
     return (
         <div className="flex flex-col">
             <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -80,8 +67,11 @@ export default function Table({ data }) {
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.region}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.zip}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <a href="#" className="text-indigo-600 hover:text-indigo-900">
+                                            <a onClick={() => getUserDataById(user._id)} href="#" className="text-indigo-600 hover:text-indigo-900">
                                                 Edit
+                                            </a>
+                                            <a onClick={() => deleteUserById(user._id)} href="#" className="ml-1 text-red-600 hover:text-red-900">
+                                                Delete
                                             </a>
                                         </td>
                                     </tr>

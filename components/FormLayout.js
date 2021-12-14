@@ -16,11 +16,40 @@ const defaultUserState = []
 export default function FormLayout() {
     const [formUser, setFormUser] = useState(initialState)
     const [userList, setUserList] = useState(defaultUserState)
+    const [isEdit, setIsEdit] = useState(false)
     const { firstname, lastname, email, street, city, region, zip, } = formUser
 
     useEffect(() => {
         getUserData()
     }, [])
+
+    const deleteUserById = async (id) => {
+        try {
+            await Swal.fire({
+                icon: 'info',
+                title: 'พรี่ต้องการที่จะลบข้อมูลนี้จริงๆหรือครับพรี่',
+                confirmButtonText: 'ต้องการสิครับ',
+                cancelButtonText: 'ไม่ๆกดผิด',
+                showCancelButton: true
+            }).then(async e => {
+                if (e.isConfirmed) {
+                    await axios.delete(`/api/users/${id}`)
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'ผมลบข้อมูลให้พรี่แล้วนะครับ',
+                        showConfirmButton: false,
+                        timer: 2000
+                    })
+                    getUserData()
+                }
+            })
+        } catch (error) {
+            await Swal.fire({
+                icon: 'error',
+                title: 'ผมลบข้อมูลให้พรี่ไม่ได้ครับไม่รู้ทำไมเหมือนกัน',
+            })
+        }
+    }
 
     const getUserData = async () => {
         try {
@@ -31,6 +60,24 @@ export default function FormLayout() {
         }
     }
 
+    const getUserDataById = async (id) => {
+        try {
+            const { data } = await axios.get(`/api/users/${id}`)
+            setIsEdit(true)
+            setFormUser({
+                _id: data.data._id,
+                firstname: data.data.firstname,
+                lastname: data.data.lastname,
+                email: data.data.email,
+                street: data.data.street,
+                city: data.data.city,
+                region: data.data.region,
+                zip: data.data.zip
+            })
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     const handelSubmit = async (e) => {
         e.preventDefault()
@@ -53,7 +100,11 @@ export default function FormLayout() {
     }
     const setUserData = async () => {
         try {
-            await axios.post('/api/users', formUser)
+            if (isEdit) {
+                await axios.put('/api/users/' + formUser._id, formUser)
+            } else {
+                await axios.post('/api/users', formUser)
+            }
         } catch (error) {
             Swal.fire({
                 icon: 'error',
@@ -197,6 +248,13 @@ export default function FormLayout() {
                                     >
                                         Save
                                     </button>
+                                    <button
+                                        type="reset"
+                                        onClick={() => setFormUser(initialState)}
+                                        className="ml-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                                    >
+                                        Reset
+                                    </button>
                                 </div>
                             </div>
                         </form>
@@ -210,7 +268,7 @@ export default function FormLayout() {
                 </div>
             </div>
 
-            <Table data={userList} />
+            <Table data={userList} getUserDataById={getUserDataById} deleteUserById={deleteUserById} />
         </>
     )
 }
