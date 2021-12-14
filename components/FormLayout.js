@@ -16,12 +16,22 @@ const defaultUserState = []
 export default function FormLayout() {
     const [formUser, setFormUser] = useState(initialState)
     const [userList, setUserList] = useState(defaultUserState)
+    const [search, setSearch] = useState('')
     const [isEdit, setIsEdit] = useState(false)
     const { firstname, lastname, email, street, city, region, zip, } = formUser
 
     useEffect(() => {
         getUserData()
     }, [])
+
+    const getUserDataByFirstname = async (firstname) => {
+        try {
+            const { data } = await axios.post('/api/user-by-name/', { firstname: firstname })
+            setUserList(data?.data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     const deleteUserById = async (id) => {
         try {
@@ -47,6 +57,7 @@ export default function FormLayout() {
             await Swal.fire({
                 icon: 'error',
                 title: 'ผมลบข้อมูลให้พรี่ไม่ได้ครับไม่รู้ทำไมเหมือนกัน',
+                showCancelButton: true
             })
         }
     }
@@ -266,6 +277,24 @@ export default function FormLayout() {
                 <div className="py-5">
                     <div className="border-t border-gray-200" />
                 </div>
+            </div>
+
+            <div className="flex pb-5 items-center">
+                <input
+                    placeholder="Search firstname ..."
+                    onChange={(e) => setSearch(e.target.value)}
+                    type="text"
+                    name="search"
+                    id="search"
+                    autoComplete="search"
+                    className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                />
+                <button
+                    onClick={() => getUserDataByFirstname(search)}
+                    className="ml-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                    Search
+                </button>
             </div>
 
             <Table data={userList} getUserDataById={getUserDataById} deleteUserById={deleteUserById} />

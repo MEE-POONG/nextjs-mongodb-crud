@@ -1,5 +1,3 @@
-// api/users.js
-
 import dbConnect from '../../../lib/dbConnect'
 import User from '../../../models/User'
 
@@ -9,19 +7,10 @@ export default async function handler(req, res) {
     await dbConnect()
 
     switch (method) {
-        case 'GET':
-            try {
-                console.log(req.body);
-                const users = await User.find({})
-                res.status(200).json({ success: true, data: users })
-            } catch (error) {
-                res.status(400).json({ success: false })
-            }
-            break
         case 'POST':
             try {
-                const user = await User.create(req.body)
-                res.status(201).json({ success: true, data: user })
+                const users = await User.find({ firstname: { $regex: req.body.firstname } })
+                res.status(200).json({ success: true, data: users })
             } catch (error) {
                 res.status(400).json({ success: false })
             }
