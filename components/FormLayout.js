@@ -4,6 +4,7 @@ import axios from 'axios'
 import Table from '../components/Table'
 
 const initialState = {
+    img: '',
     firstname: '',
     lastname: '',
     email: '',
@@ -19,10 +20,41 @@ export default function FormLayout() {
     const [search, setSearch] = useState('')
     const [isEdit, setIsEdit] = useState(false)
     const { firstname, lastname, email, street, city, region, zip, } = formUser
-
+    const [imgFile, setImgFile] = useState()
     useEffect(() => {
         getUserData()
     }, [])
+
+    const handelSubmitFile = async (event) => {
+        const file = event.target.files[0];
+        setImgFile(file);
+    }
+
+    const uploadImage = async (img) => {
+        try {
+            let userData
+            if (img) {
+                let formData = new FormData();
+                formData.append('file', img, img.name);
+                const { data } = await axios.post('/api/upload/', formData)
+                console.log(data?.filename);
+
+                userData = {
+                    ...formUser,
+                    img: data?.filename || formUser?.img
+                }
+            }
+            
+            userData = { ...formUser }
+            setImgFile('')
+            
+            const setDataError = await setUserData(userData)
+            if (setDataError) return
+
+        } catch (error) {
+            return true
+        }
+    }
 
     const getUserDataByFirstname = async (firstname) => {
         try {
@@ -76,6 +108,7 @@ export default function FormLayout() {
             const { data } = await axios.get(`/api/users/${id}`)
             setIsEdit(true)
             setFormUser({
+                img: data.data.img,
                 _id: data.data._id,
                 firstname: data.data.firstname,
                 lastname: data.data.lastname,
@@ -95,8 +128,9 @@ export default function FormLayout() {
         const validationError = validationUser()
         if (validationError) return
 
-        const setDataError = await setUserData()
-        if (setDataError) return
+        const uploadError = await uploadImage(imgFile)
+        if (uploadError) return
+        console.log(formUser);
 
         setFormUser(initialState)
 
@@ -109,12 +143,12 @@ export default function FormLayout() {
 
         await getUserData()
     }
-    const setUserData = async () => {
+    const setUserData = async (data) => {
         try {
             if (isEdit) {
-                await axios.put('/api/users/' + formUser._id, formUser)
+                await axios.put('/api/users/' + data._id, data)
             } else {
-                await axios.post('/api/users', formUser)
+                await axios.post('/api/users', data)
             }
         } catch (error) {
             Swal.fire({
@@ -136,6 +170,12 @@ export default function FormLayout() {
         }
     }
 
+    const showImage = () =>
+        !formUser.img ?
+            imgFile
+                ? URL.createObjectURL(imgFile)
+                : "https://i.stack.imgur.com/y9DpT.jpg" : 'uploads/' + formUser.img
+
     return (
         <>
 
@@ -146,6 +186,22 @@ export default function FormLayout() {
                             <div className="shadow overflow-hidden sm:rounded-md">
                                 <div className="px-4 py-5 bg-white sm:p-6">
                                     <div className="grid grid-cols-6 gap-6">
+                                        <div className="col-span-6 justify-self-center">
+                                            <img
+                                                className="App-image"
+                                                src={showImage()}
+                                                alt=""
+                                                width="500px"
+                                            />
+                                            <input
+                                                onChange={handelSubmitFile}
+                                                type="file"
+                                                name="img"
+                                                id="img"
+                                                autoComplete="given-name"
+                                                className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                            />
+                                        </div>
                                         <div className="col-span-6 sm:col-span-3">
                                             <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">
                                                 First name
@@ -261,7 +317,7 @@ export default function FormLayout() {
                                     </button>
                                     <button
                                         type="reset"
-                                        onClick={() => setFormUser(initialState)}
+                                        onClick={() => { setFormUser(initialState); setImgFile(''); }}
                                         className="ml-1 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                                     >
                                         Reset
