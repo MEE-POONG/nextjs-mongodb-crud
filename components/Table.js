@@ -12,7 +12,7 @@ const people = [
     // More people...
 ]
 
-export default function Table({ data }) {
+export default function Table({ data,getUserDataById,deleteUserById }) {
     console.log(data);
     return (
         <div className="flex flex-col">
@@ -80,8 +80,11 @@ export default function Table({ data }) {
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.region}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.zip}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                                                Edit
+                                            <a onClick={()=>getUserDataById(user._id)} href="#" className="text-indigo-600 hover:text-indigo-900">
+                                                Edit 
+                                            </a>
+                                            <a onClick={()=>deleteUserById(user._id)} href="#" className= " ml-1 text-red-600 hover:text-indigo-900">
+                                                Delete 
                                             </a>
                                         </td>
                                     </tr>
