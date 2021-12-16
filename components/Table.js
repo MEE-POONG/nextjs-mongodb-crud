@@ -1,4 +1,6 @@
 /* This example requires Tailwind CSS v2.0+ */
+import Image from 'next/image';
+
 
 export default function Table({ data, getUserDataById, deleteUserById }) {
     return (
@@ -51,6 +53,13 @@ export default function Table({ data, getUserDataById, deleteUserById }) {
                                     >
                                         ZIP
                                     </th>
+                                    <th
+                                        scope="col"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    >
+                                        pic
+                                    </th>
+                                   
                                     <th scope="col" className="relative px-6 py-3">
                                         <span className="sr-only">Edit</span>
                                     </th>
@@ -58,6 +67,7 @@ export default function Table({ data, getUserDataById, deleteUserById }) {
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {data.map((user) => (
+                                    
                                     <tr key={user._id}>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.firstname}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.lastname}</td>
@@ -66,6 +76,13 @@ export default function Table({ data, getUserDataById, deleteUserById }) {
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.city}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.region}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.zip}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            <Image
+                                                src={`/uploads/`+user.img}
+                                                alt=""
+                                                width={50} height={50}
+                                            />
+                                        </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <a onClick={() => getUserDataById(user._id)} href="#" className="text-indigo-600 hover:text-indigo-900">
                                                 Edit

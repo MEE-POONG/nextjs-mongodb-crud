@@ -19,7 +19,7 @@ export default function FormLayout() {
     const [userList, setUserList] = useState(defaultUserState)
     const [search, setSearch] = useState('')
     const [isEdit, setIsEdit] = useState(false)
-    const { firstname, lastname, email, street, city, region, zip, } = formUser
+    const { firstname, lastname, email, street, city, region, zip,  } = formUser
     const [imgFile, setImgFile] = useState()
     useEffect(() => {
         getUserData()
